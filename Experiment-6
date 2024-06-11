@@ -1,0 +1,76 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_TEXT_LENGTH 1000
+#define ALPHABET_LENGTH 26
+
+int gcd(int a, int b) {
+    if (b == 0)
+        return a;
+    return gcd(b, a % b);
+}
+
+int modInverse(int a, int m) {
+    for (int x = 1; x < m; x++)
+        if (((a % m) * (x % m)) % m == 1)
+            return x;
+    return -1;
+}
+
+void decrypt_affine_cipher(char *ciphertext, int a, int b) {
+    int a_inverse = modInverse(a, ALPHABET_LENGTH);
+    if (a_inverse == -1) {
+        printf("The key is not valid. Please choose another key.\n");
+        return;
+    }
+
+    int text_length = strlen(ciphertext);
+    for (int i = 0; i < text_length; i++) {
+        if (ciphertext[i] >= 'A' && ciphertext[i] <= 'Z') {
+            int c = ciphertext[i] - 'A';
+            int plain = (a_inverse * (c - b)) % ALPHABET_LENGTH;
+            if (plain < 0)
+                plain += ALPHABET_LENGTH;
+            printf("%c", plain + 'A');
+        } else {
+            printf("%c", ciphertext[i]);
+        }
+    }
+    printf("\n");
+}
+
+int main() {
+    char ciphertext[MAX_TEXT_LENGTH];
+    printf("Enter the ciphertext: ");
+    fgets(ciphertext, sizeof(ciphertext), stdin);
+
+    int freq[ALPHABET_LENGTH] = {0};
+    for (int i = 0; i < strlen(ciphertext); i++) {
+        if (ciphertext[i] >= 'A' && ciphertext[i] <= 'Z') {
+            freq[ciphertext[i] - 'A']++;
+        }
+    }
+
+    int max_freq_index = 0;
+    for (int i = 1; i < ALPHABET_LENGTH; i++) {
+        if (freq[i] > freq[max_freq_index])
+            max_freq_index = i;
+    }
+
+    int second_max_freq_index = 0;
+    for (int i = 0; i < ALPHABET_LENGTH; i++) {
+        if (i != max_freq_index && freq[i] > freq[second_max_freq_index])
+            second_max_freq_index = i;
+    }
+
+    
+    int a = (max_freq_index - second_max_freq_index + ALPHABET_LENGTH) % ALPHABET_LENGTH;
+    int b = (max_freq_index - (a * 4)) % ALPHABET_LENGTH;
+    printf("The key is: a = %d, b = %d\n", a, b);
+
+  
+    printf("The decrypted text is: ");
+    decrypt_affine_cipher(ciphertext, a, b);
+
+    return 0;
+}
