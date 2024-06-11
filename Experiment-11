@@ -1,0 +1,24 @@
+#include <stdio.h>
+
+long long factorial(int n) {
+    long long result = 1;
+    for (int i = 1; i <= n; ++i) {
+        result *= i;
+    }
+    return result;
+}
+
+int main() {
+    int key_length = 25; 
+    long long possible_keys = factorial(key_length);
+
+    printf("Number of possible keys without considering duplicates: %lld\n", possible_keys);
+
+
+    int num_equivalent_pairs = 1;
+    long long effectively_unique_keys = possible_keys / (1 << num_equivalent_pairs);
+
+    printf("Number of effectively unique keys considering equivalent keys: %lld\n", effectively_unique_keys);
+
+    return 0;
+}
