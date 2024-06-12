@@ -1,0 +1,37 @@
+#include <stdio.h>
+#include <math.h>
+unsigned long long mod_exp(unsigned long long base, unsigned long long exp, unsigned long long mod) {
+    unsigned long long result = 1;
+    while (exp > 0) {
+        if (exp % 2 == 1) {
+            result = (result * base) % mod;
+        }
+        base = (base * base) % mod;
+        exp = exp / 2;
+    }
+    return result;
+}
+int main() {
+    unsigned long long p = 23; 
+    unsigned long long g = 5; 
+    unsigned long long a, b;
+    unsigned long long A, B;
+    unsigned long long shared_secret_A, shared_secret_B;
+    printf("Enter secret number for Alice: ");
+    scanf("%llu", &a);
+    printf("Enter secret number for Bob: ");
+    scanf("%llu", &b);
+    A = mod_exp(g, a, p);
+    B = mod_exp(g, b, p);
+
+    printf("Public key of Alice: %llu\n", A);
+    printf("Public key of Bob: %llu\n", B);
+
+    shared_secret_A = mod_exp(B, a, p);
+    shared_secret_B = mod_exp(A, b, p);
+
+    printf("Shared secret computed by Alice: %llu\n", shared_secret_A);
+    printf("Shared secret computed by Bob: %llu\n", shared_secret_B);
+
+    return 0;
+}
