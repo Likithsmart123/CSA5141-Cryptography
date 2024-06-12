@@ -1,0 +1,76 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+int gcd(int a, int b) {
+    while (b != 0) {
+        int temp = b;
+        b = a % b;
+        a = temp;
+    }
+    return a;
+}
+unsigned long long mod_exp(unsigned long long base, unsigned long long exp, unsigned long long mod) {
+    unsigned long long result = 1;
+    while (exp > 0) {
+        if (exp % 2 == 1) {
+            result = (result * base) % mod;
+        }
+        base = (base * base) % mod;
+        exp = exp / 2;
+    }
+    return result;
+}
+int multiplicative_inverse(int e, int phi) {
+    int t = 0, new_t = 1;
+    int r = phi, new_r = e;
+    while (new_r != 0) {
+        int quotient = r / new_r;
+        int temp = new_t;
+        new_t = t - quotient * new_t;
+        t = temp;
+        temp = new_r;
+        new_r = r - quotient * new_r;
+        r = temp;
+    }
+    if (r > 1) return -1; 
+    if (t < 0) t += phi;
+    return t;
+}
+
+int generate_prime(int min, int max) {
+    int num;
+    while (1) {
+        num = rand() % (max - min + 1) + min;
+        int is_prime = 1;
+        for (int i = 2; i * i <= num; i++) {
+            if (num % i == 0) {
+                is_prime = 0;
+                break;
+            }
+        }
+        if (is_prime) return num;
+    }
+}
+
+int main() {
+    srand(time(0));
+    
+    int p = generate_prime(50, 100);
+    int q = generate_prime(50, 100);
+    
+    unsigned long long n = (unsigned long long)p * q;
+    
+    int phi = (p - 1) * (q - 1);
+    
+    int e = 3;
+    while (gcd(e, phi) != 1) {
+        e += 2; 
+    }
+    
+    int d = multiplicative_inverse(e, phi);
+    
+    printf("Public Key: (e = %d, n = %llu)\n", e, n);
+    printf("Private Key: (d = %d, n = %llu)\n", d, n);
+    
+    return 0;
+}
