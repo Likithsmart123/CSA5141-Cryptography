@@ -1,0 +1,57 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#define MAX 1000
+unsigned long long mod_exp(unsigned long long base, unsigned long long exp, unsigned long long mod) {
+    unsigned long long result = 1;
+    while (exp > 0) {
+        if (exp % 2 == 1) {
+            result = (result * base) % mod;
+        }
+        base = (base * base) % mod;
+        exp = exp / 2;
+    }
+    return result;
+}
+int char_to_int(char c) {
+    if (c >= 'A' && c <= 'Z') {
+        return c - 'A';
+    } else {
+        return -1;
+    }
+}
+char int_to_char(int i) {
+    if (i >= 0 && i < 26) {
+        return 'A' + i;
+    } else {
+        return '?';
+    }
+}
+
+int main() {
+    unsigned long long e = 65537; 
+    unsigned long long n = 999630013489; 
+    unsigned long long plaintext[MAX], ciphertext[MAX];
+    int i, length;
+    char message[MAX];
+
+    printf("Enter message to encrypt (A-Z only): ");
+    scanf("%s", message);
+
+    for (i = 0; message[i] != '\0'; i++) {
+        plaintext[i] = char_to_int(message[i]);
+    }
+    length = i;
+
+    for (i = 0; i < length; i++) {
+        ciphertext[i] = mod_exp(plaintext[i], e, n);
+    }
+
+    printf("Encrypted message: ");
+    for (i = 0; i < length; i++) {
+        printf("%llu ", ciphertext[i]);
+    }
+    printf("\n");
+
+    return 0;
+}
